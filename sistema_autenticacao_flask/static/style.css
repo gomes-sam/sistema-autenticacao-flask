@@ -1,0 +1,134 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #0f172a;
+    color: #e2e8f0;
+    padding: 2rem;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #334155;
+}
+
+header h1 {
+    color: #38bdf8;
+    margin-bottom: 0.5rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background-color: #1e293b;
+    padding: 1.5rem;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.card h2 {
+    color: #f8fafc;
+    font-size: 1.2rem;
+}
+
+.hint {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+}
+
+code {
+    background: #0f172a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #38bdf8;
+}
+
+label {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+input, select {
+    padding: 0.65rem;
+    border-radius: 6px;
+    border: 1px solid #475569;
+    background-color: #0f172a;
+    color: #f8fafc;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+button {
+    padding: 0.65rem 1rem;
+    border: none;
+    border-radius: 6px;
+    background-color: #0284c7;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    flex: 1;
+}
+
+button:hover {
+    background-color: #0369a1;
+}
+
+button.secondary {
+    background-color: #475569;
+}
+
+button.secondary:hover {
+    background-color: #334155;
+}
+
+.result-box {
+    margin-top: 0.75rem;
+    padding: 0.85rem;
+    border-radius: 6px;
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    font-size: 0.9rem;
+}
+
+.result-box.sucesso {
+    border-color: #22c55e;
+    color: #4ade80;
+}
+
+.result-box.erro {
+    border-color: #ef4444;
+    color: #f87171;
+}
+
+.result-box.info {
+    border-color: #38bdf8;
+    color: #7dd3fc;
+}
+
+.result-box ul {
+    margin-top: 0.5rem;
+    padding-left: 1.25rem;
+}

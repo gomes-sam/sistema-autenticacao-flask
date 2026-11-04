@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratório de Segurança: Autenticação e Defesas</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Laboratório de Segurança da Informação</h1>
+            <p>Demonstração de Autenticação, Senhas Fortes, Throttling e Rate Limiting em Flask</p>
+        </header>
+
+        <div class="grid">
+            <section class="card">
+                <h2>1. Simulador de Login</h2>
+                <p class="hint">Usuários de teste: <code>admin_fraco</code> (PIN: <code>583</code>) | <code>admin_forte</code> (Senha: <code>S3nh@F0rt3#2026</code>)</p>
+                
+                <label for="endpoint">Modo do Endpoint:</label>
+                <select id="endpoint">
+                    <option value="/api/login-protegido">Protegido (Rate Limit + Lockout 5 falhas)</option>
+                    <option value="/api/login-sem-protecao">Sem Proteção (Sem limite de tentativas)</option>
+                </select>
+
+                <label for="usuario">Usuário:</label>
+                <input type="text" id="usuario" value="admin_fraco">
+
+                <label for="senha">Senha / PIN:</label>
+                <input type="password" id="senha" placeholder="Digite a senha...">
+
+                <div class="actions">
+                    <button onclick="realizarLogin()">Testar Login</button>
+                    <button class="secondary" onclick="resetarBloqueios()">Resetar Bloqueios</button>
+                </div>
+
+                <div id="resultado-login" class="result-box">Aguardando teste...</div>
+            </section>
+
+            <section class="card">
+                <h2>2. Validador de Política de Senha Forte</h2>
+                <p class="hint">Teste se uma senha atende aos requisitos mínimos contra adivinhação e dicionários comuns.</p>
+
+                <label for="nova-senha">Testar Nova Senha:</label>
+                <input type="text" id="nova-senha" placeholder="Ex: 123456 ou S3nh@Segura!">
+
+                <button onclick="testarForcaSenha()">Analisar Força da Senha</button>
+
+                <div id="resultado-senha" class="result-box">Digite uma senha para avaliar os critérios.</div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        async function realizarLogin() {
+            const endpoint = document.getElementById('endpoint').value;
+            const usuario = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
+            const box = document.getElementById('resultado-login');
+
+            try {
+                const resp = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario, senha })
+                });
+                const dados = await resp.json();
+                box.className = 'result-box ' + (resp.ok ? 'sucesso' : 'erro');
+                box.innerHTML = `<strong>Status HTTP ${resp.status}:</strong> ${dados.mensagem}`;
+            } catch (err) {
+                box.className = 'result-box erro';
+                box.textContent = 'Erro ao comunicar com o servidor.';
+            }
+        }
+
+        async function resetarBloqueios() {
+            const resp = await fetch('/api/reset-bloqueios', { method: 'POST' });
+            const dados = await resp.json();
+            const box = document.getElementById('resultado-login');
+            box.className = 'result-box info';
+            box.textContent = dados.mensagem;
+        }
+
+        async function testarForcaSenha() {
+            const senha = document.getElementById('nova-senha').value;
+            const box = document.getElementById('resultado-senha');
+            
+            box.className = 'result-box info';
+            box.innerHTML = 'A analisar...';
+
+            try {
+                const resp = await fetch('/api/validar-senha', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ senha })
+                });
+                
+                if (resp.status === 500) {
+                    throw new Error("Erro no servidor (500). Verifique o terminal do VS Code.");
+                }
+
+                const dados = await resp.json();
+                
+                if (dados.valida) {
+                    box.className = 'result-box sucesso';
+                    box.innerHTML = `<strong>✔ ${dados.mensagem}</strong>`;
+                } else {
+                    box.className = 'result-box erro';
+                    box.innerHTML = `<strong>✖ ${dados.mensagem}</strong><ul>` +
+                        dados.erros.map(e => `<li>${e}</li>`).join('') + `</ul>`;
+                }
+            } catch (err) {
+                box.className = 'result-box erro';
+                box.innerHTML = `<strong>Erro:</strong> ${err.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
